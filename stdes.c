@@ -21,8 +21,29 @@ int iobuf_close(IOBUF_FILE* f)
 
 ssize_t iobuf_read(void* p, unsigned int taille, unsigned int nbelem, IOBUF_FILE * f)
 {
-    
-    while 
+
+    int nbalire = taille*nbelem;
+
+
+    if (f->used_size==0) {
+        read(f->fd, f->buf, BUFFER_SIZE);
+    }
+    else if (nbalire < f->used_size) {
+        memcpy(p, f->buf+f->curseur, nbalire);
+        return nbelem;
+    }
+    else if (f->used_size < nbalire && nbalire < BUFFER_SIZE) {
+        
+        memcpy(p, f->buf+f->curseur, f->used_size - (used_size % taille));
+        return (f->used_size - (used_size % taille)) / taille;
+    }
+    else {
+        int x = read(f->fd, p, nbalire - (nbalire % taille));
+        read(f->fd, f->buf+f->curseur, nbalire % taille);
+        return x/taille;
+
+    }
+
     return -1;
 }
 
