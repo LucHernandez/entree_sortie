@@ -7,7 +7,11 @@
 // ... Enrichir ...
 typedef struct IOBUF_FILE
 {
-  ...
+  int fd;
+  void *buffer;
+  char mode; // 0 pour lecture 1 pour écriture
+  size_t curseur;
+  size_t used_size;
 } IOBUF_FILE;
 
 /* ----------------------------------------------------------*/
