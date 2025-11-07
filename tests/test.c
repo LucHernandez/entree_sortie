@@ -1,0 +1,33 @@
+#include "stdes.h"
+#include <stdlib.h>
+
+
+
+
+int main(int argc, char *argv[])
+{
+    IOBUF FILE *f1;
+    IOBUF FILE *f2;
+    char c;
+    
+    if (argc != 3)
+        exit(-1);
+    
+    f1 = iobuf_open (argv[1], 'R');
+    if (f1 == NULL)
+        exit (-1);
+    
+    f2 = iobuf_open (argv[2], 'W');
+    if (f2 == NULL)
+        exit (-1);
+    
+    while (iobuf_fscanf (&c, 1, 1, f1) == 1) {
+        iobuf_fprintf (&c, 1, 1, stdout);
+        iobuf_fprintf (&c, 1, 1, f2);
+    }
+    
+    iobuf_close (f1);
+    iobuf_close (f2);
+    
+    return 0;
+}
