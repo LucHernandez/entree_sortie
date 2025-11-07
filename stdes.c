@@ -9,13 +9,34 @@
 
 IOBUF_FILE* iobuf_open(char* nom, char mode)
 {
-  // ... Implémenter ...
-  return NULL;
+  IOBUF_FILE *f = (IOBUF_FILE *) malloc(sizeof(IOBUF_FILE));
+  if (!f) return NULL;
+  f->buffer = (void *) malloc(BUFFER_SIZE);
+  if (!f->buffer) return NULL;
+
+  f->curseur = 0;
+  f->mode = mode;
+  f->used_size = 0;
+  if (mode == 'R') {
+    f->fd = open(nom, "O_RDONLY"); 
+  } else {
+    f->fd = open(nom, "O_WRONLY");
+  }
+
+  return f;
 }
 
 int iobuf_close(IOBUF_FILE* f)
 {
-  // ... Implémenter ...
+  if (!f) return 1;
+
+  if (f->mode == 'R') {
+    write(f->fd, , );
+  }
+  read
+
+  if (f->buffer) free(f->buffer);
+  free(f);
   return -1;
 }
 
@@ -44,6 +65,8 @@ ssize_t iobuf_read(void* p, unsigned int taille, unsigned int nbelem, IOBUF_FILE
 
     }
 
+    
+    
     return -1;
 }
 

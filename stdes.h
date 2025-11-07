@@ -4,13 +4,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE (1024)
+
 // ... Enrichir ...
 typedef struct IOBUF_FILE
 {
   int fd;
   void *buffer;
-  char mode; // 0 pour lecture 1 pour écriture
+  char mode; // R pour lecture W pour écriture
   size_t curseur;
   size_t used_size;
 } IOBUF_FILE;

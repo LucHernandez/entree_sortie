@@ -1,13 +1,14 @@
 #include "stdes.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 
 
 
 int main(int argc, char *argv[])
 {
-    IOBUF FILE *f1;
-    IOBUF FILE *f2;
+    IOBUF_FILE *f1;
+    IOBUF_FILE *f2;
     char c;
     
     if (argc != 3)

@@ -10,13 +10,13 @@ int main (int argc, char **argv)
         exit(-1);
     }
     // ecriture d'un contenu
-    IOBUF FILE *f;
+    IOBUF_FILE *f;
     f =  iobuf_open(argv[1], 'W');
     iobuf_fprintf(f, "Mes données à moi: a, b, c, 82, -40, :) coucou comment allez vous ?");
     iobuf_close(f);
 
     // lecture du contenu 
-    IOBUF FILE *f1;
+    IOBUF_FILE *f1;
     f1 = iobuf_open(argv[1], 'R');
     char c1='-',c2='-',c3='-';
     int i1=0, i2=0;
