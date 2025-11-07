@@ -19,8 +19,8 @@ typedef struct IOBUF_FILE
 /* ----------------------------------------------------------*/
 IOBUF_FILE* iobuf_open(char* nom, char mode);
 int iobuf_close(IOBUF_FILE* f);
-int iobuf_read(void* p, unsigned int taille, unsigned int nbelem, IOBUF_FILE * f);
-int iobuf_write(void* p, unsigned int taille, unsigned int nbelem, IOBUF_FILE * f);
+ssize_t iobuf_read(void* p, unsigned int taille, unsigned int nbelem, IOBUF_FILE * f);
+ssize_t iobuf_write(void* p, unsigned int taille, unsigned int nbelem, IOBUF_FILE * f);
 
 int iobuf_fprintf(IOBUF_FILE* fp, char* format, ...);
 int iobuf_fscanf(IOBUF_FILE* fp, char* format, ...);
