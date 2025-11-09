@@ -29,14 +29,11 @@ IOBUF_FILE* iobuf_open(char* nom, char mode)
   f->curseur = 0;
   f->mode = mode;
   f->used_size = 0;
-  if (mode == 'R') {
-    f->fd = open(nom, O_RDONLY);
+  if (mode == IOBUF_MODE_R) {
     f->fd = open(nom, O_RDONLY);
   } else {
     f->fd = open(nom, O_WRONLY | O_CREAT);
-    f->fd = open(nom, O_WRONLY | O_CREAT);
   }
-  f->eof = 0;
   f->eof = 0;
 
   return f;
@@ -46,13 +43,8 @@ int iobuf_close(IOBUF_FILE* f)
 {
   if (!f) return 1;
 
-  if (f->mode == 'W') iobuf_flush(f);
+  if (f->mode == IOBUF_MODE_W) iobuf_flush(f);
 
-  if (f->buffer) {
-    free(f->buffer);
-  }
-  close(f->fd);
-  int fd = f->fd;
   if (f->buffer) {
     free(f->buffer);
   }
@@ -60,13 +52,12 @@ int iobuf_close(IOBUF_FILE* f)
   int fd = f->fd;
   free(f);
   return fd;
-  return fd;
 }
 
 ssize_t iobuf_read(void* p, unsigned int taille, unsigned int nbelem, IOBUF_FILE * f)
 {
   if (!f || !f->buffer) exit(1);
-  if (f->mode != 'R') exit(2);
+  if (f->mode != IOBUF_MODE_R) exit(2);
   if (taille * nbelem == 0) return 0;
 
   const ssize_t max_capacity = BUFFER_SIZE / taille;
@@ -98,6 +89,7 @@ ssize_t iobuf_read(void* p, unsigned int taille, unsigned int nbelem, IOBUF_FILE
 
   // in case of end of file on last fillup
   nb_readable_elems = f->used_size/taille;
+  if (nb_readable_elems > nbelem) nb_readable_elems = nbelem;
   memcpy(p, f->buffer, nb_readable_elems * taille);
   f->curseur += nb_readable_elems * taille;
 

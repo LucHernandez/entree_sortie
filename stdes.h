@@ -4,11 +4,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE (1024)
+#define BUFFER_SIZE (3)
 
 #define IOBUF_MODE_R 'R'
 #define IOBUF_MODE_W 'W'
-
 
 // ... Enrichir ...
 typedef struct IOBUF_FILE
