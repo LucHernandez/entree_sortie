@@ -14,6 +14,7 @@ typedef struct IOBUF_FILE
   char mode; // R pour lecture W pour écriture
   size_t curseur;
   size_t used_size;
+  char eof;
 } IOBUF_FILE;
 
 /* ----------------------------------------------------------*/
