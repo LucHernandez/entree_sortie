@@ -4,11 +4,17 @@
 #include <fcntl.h>
 #include <string.h>
 
+#include <fcntl.h>
+#include <string.h>
+
 #include "stdes.h"
 
 /* ----------------------------------------------------------*/
 /* Implémentation bibliothèque d'entrées/sorties            */
 /* ----------------------------------------------------------*/             
+
+ssize_t iobuf_flush(IOBUF_FILE *f); // TODO implement
+void iobuf_fillup_R(IOBUF_FILE *f); // TODO implement
 
 ssize_t iobuf_flush(IOBUF_FILE *f); // TODO implement
 void iobuf_fillup_R(IOBUF_FILE *f); // TODO implement
@@ -25,9 +31,12 @@ IOBUF_FILE* iobuf_open(char* nom, char mode)
   f->used_size = 0;
   if (mode == 'R') {
     f->fd = open(nom, O_RDONLY);
+    f->fd = open(nom, O_RDONLY);
   } else {
     f->fd = open(nom, O_WRONLY | O_CREAT);
+    f->fd = open(nom, O_WRONLY | O_CREAT);
   }
+  f->eof = 0;
   f->eof = 0;
 
   return f;
@@ -37,14 +46,20 @@ int iobuf_close(IOBUF_FILE* f)
 {
   if (!f) return 1;
 
-  if (f->mode == 'R') iobuf_flush(f);
+  if (f->mode == 'W') iobuf_flush(f);
 
   if (f->buffer) {
     free(f->buffer);
   }
   close(f->fd);
   int fd = f->fd;
+  if (f->buffer) {
+    free(f->buffer);
+  }
+  close(f->fd);
+  int fd = f->fd;
   free(f);
+  return fd;
   return fd;
 }
 
@@ -71,7 +86,7 @@ ssize_t iobuf_read(void* p, unsigned int taille, unsigned int nbelem, IOBUF_FILE
     memcpy(p, f->buffer, nb_readable_bytes);
     p += nb_readable_bytes;
 
-    f->curseur = BUFFER_SIZE - nb_readable_bytes;
+    f->curseur += nb_readable_bytes;
 
     nb_elem_read += nb_readable_elems;
 
@@ -109,10 +124,11 @@ int iobuf_fscanf(IOBUF_FILE* fp, char* format, ...)
 
 void iobuf_fillup_R(IOBUF_FILE *f)
 {
-  if (f->eof) return 0;
+  if (f->eof) return;
 
   // moving cursor to the left to read as much data as possible
   memmove(f->buffer, f->buffer + f->curseur, f->used_size - f->curseur);
+  f->used_size -= f->curseur;
   f->curseur = 0;
 
   // filling up
@@ -120,4 +136,9 @@ void iobuf_fillup_R(IOBUF_FILE *f)
 
   if (amount_read + f->used_size != BUFFER_SIZE) f->eof = 1;
   f->used_size += amount_read;
+}
+
+ssize_t iobuf_flush(IOBUF_FILE *f) {
+  // TODO implement
+  return 0;
 }
