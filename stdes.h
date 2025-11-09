@@ -6,6 +6,9 @@
 
 #define BUFFER_SIZE (1024)
 
+#define IOBUF_MODE_R 'R'
+#define IOBUF_MODE_W 'W'
+
 // ... Enrichir ...
 typedef struct IOBUF_FILE
 {
