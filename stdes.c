@@ -4,6 +4,9 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdarg.h>
+
+#include <stdio.h>
+
 #include "stdes.h"
 
 /* ----------------------------------------------------------*/
@@ -87,7 +90,7 @@ ssize_t iobuf_read(void* p, unsigned int taille, unsigned int nbelem, IOBUF_FILE
     // in case of end of file on last fillup
     nb_readable_elems = f->used_size/taille;
     if (nb_readable_elems > nbelem) nb_readable_elems = nbelem;
-    memcpy(p, f->buffer, nb_readable_elems * taille);
+    memcpy(p, f->buffer + f->curseur, nb_readable_elems * taille);
     f->curseur += nb_readable_elems * taille;
 
     return nb_elem_read + nb_readable_elems;
@@ -114,7 +117,7 @@ int iobuf_fscanf(IOBUF_FILE* fp, char* format, ...)
     va_list args;
     va_start(args, format);
     int not_eof = iobuf_read(&curseur, 1, 1, fp);
-    while (i < len_format) {
+    while (i < len_format && not_eof) {
         if (format[i] == '%') {
             // TODO gestion cas lecture formattée
             switch(format[i+1]) {
@@ -129,11 +132,12 @@ int iobuf_fscanf(IOBUF_FILE* fp, char* format, ...)
                 // Reading numerical chars
                 while ('0' <= curseur && curseur <= '9' && not_eof) {
                     intval *= 10;
-                    intval += curseur;
+                    intval += curseur - '0';
                     not_eof = iobuf_read(&curseur, 1, 1, fp);
                 }
                 *va_arg(args,int*) = intval;
                 items_matched++;
+                i += 2;
                 break;
             case 's':
                 char *str = va_arg(args, char*);
@@ -148,21 +152,26 @@ int iobuf_fscanf(IOBUF_FILE* fp, char* format, ...)
                 // Ending the string
                 str[0] = '\0';
                 items_matched++;
+                i += 2;
                 break;
             case '%':
+                // TODO BON NB READ
                 fp->curseur--;
                 break;
             }
+            continue;
         } else if (curseur != format[i]) {
             // Pattern does not match
             fp->curseur--;
+            va_end(args);
             return items_matched;
         } else {
             not_eof = iobuf_read(&curseur, 1, 1, fp);
+            i++;
         }
-        i++;
     }
-    return -1;
+    va_end(args);
+    return items_matched;
 }
 
 void iobuf_fillup_R(IOBUF_FILE *f)
